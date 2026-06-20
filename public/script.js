@@ -72,12 +72,17 @@
 			body = body.replace(SHORTCODES.sensitive, '');
 		}
 		body = body
-			.replace(SHORTCODES.yt, (_, id) => embed(`https://www.youtube.com/embed/${id}`))
+			.replace(SHORTCODES.yt, (_, id) =>
+				embed(`https://www.youtube.com/embed/${id}`, 'video'),
+			)
 			.replace(SHORTCODES.bl, (_, id) =>
-				embed(`https://player.bilibili.com/player.html?bvid=${id}`),
+				embed(
+					`https://player.bilibili.com/player.html?bvid=${id}&autoplay=0&high_quality=1&danmaku=0`,
+					'video',
+				),
 			)
 			.replace(SHORTCODES.x, (_, id) =>
-				embed(`https://platform.twitter.com/embed/Tweet.html?id=${id}`),
+				embed(`https://platform.twitter.com/embed/Tweet.html?id=${id}`, 'x'),
 			)
 			.replace(
 				SHORTCODES.post,
@@ -86,8 +91,8 @@
 		return { body, sensitive };
 	}
 
-	function embed(src) {
-		return `\n\n<iframe src="${src}" allowfullscreen frameborder="0" loading="lazy"></iframe>\n\n`;
+	function embed(src, type) {
+		return `\n\n<iframe class="embed embed-${type}" src="${src}" allowfullscreen frameborder="0" loading="lazy"></iframe>\n\n`;
 	}
 
 	const PURIFY_CONFIG = {
