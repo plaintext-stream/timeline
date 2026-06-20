@@ -1,9 +1,11 @@
 import { json, error } from '../types';
+import { authorize } from '../auth';
 import { r2Key } from '../images';
 
 const MAX_IMAGE = 12 * 1024 * 1024;
 
 export async function handleUpload(request: Request, env: Env): Promise<Response> {
+	if (!authorize(request, env)) return error(401, 'Unauthorized');
 	const contentType = request.headers.get('Content-Type') ?? '';
 	if (!contentType.startsWith('multipart/form-data')) {
 		return error(400, 'Expected multipart/form-data');
@@ -17,7 +19,7 @@ export async function handleUpload(request: Request, env: Env): Promise<Response
 		return error(413, 'Image too large (max 12MB)');
 	}
 	const name = `${crypto.randomUUID()}.webp`;
-	await env.TIMELINE_OS.put(r2Key(name), file.stream(), {
+	await env.TIMELINE_OS.put(r2Key(name), await file.arrayBuffer(), {
 		httpMetadata: { contentType: 'image/webp' },
 	});
 	return json({ url: `/i/${name}` });

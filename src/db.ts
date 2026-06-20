@@ -1,12 +1,8 @@
 import type { Post } from './types';
 import { schema } from './schema';
 
-let migrated = false;
-
 export async function migrate(db: D1Database): Promise<void> {
-	if (migrated) return;
 	await db.exec(schema);
-	migrated = true;
 }
 
 export function generateId(): string {

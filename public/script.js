@@ -79,7 +79,10 @@
 			.replace(SHORTCODES.x, (_, id) =>
 				embed(`https://platform.twitter.com/embed/Tweet.html?id=${id}`),
 			)
-			.replace(SHORTCODES.post, (_, id) => `<div class="quote-slot" data-quote="${id}"></div>`);
+			.replace(
+				SHORTCODES.post,
+				(_, id) => `<div class="quote-slot" data-quote="${id}"></div>`,
+			);
 		return { body, sensitive };
 	}
 
@@ -392,7 +395,11 @@
 		const ctx = canvas.getContext('2d');
 		ctx.drawImage(bitmap, 0, 0);
 		return await new Promise((resolve, reject) =>
-			canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('webp encode failed'))), 'image/webp', 0.85),
+			canvas.toBlob(
+				(b) => (b ? resolve(b) : reject(new Error('webp encode failed'))),
+				'image/webp',
+				0.85,
+			),
 		);
 	}
 
