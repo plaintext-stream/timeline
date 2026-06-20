@@ -185,12 +185,22 @@ a:hover {
 	width: 100%;
 	aspect-ratio: 16 / 9;
 }
-.content iframe.embed-x {
-	width: 100%;
-	max-width: 550px;
-	height: 480px;
-	margin: 0.8em auto;
-	background: var(--surface);
+.x-slot {
+	display: flex;
+	justify-content: center;
+	margin: 0.8em 0;
+}
+.x-slot iframe {
+	max-width: 100% !important;
+	width: 550px !important;
+	border-radius: 8px;
+	overflow: hidden;
+}
+.x-fallback {
+	display: block;
+	text-align: center;
+	margin: 0.8em 0;
+	color: var(--muted);
 }
 
 /* Sensitive blur */

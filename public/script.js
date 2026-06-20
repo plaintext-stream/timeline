@@ -81,9 +81,7 @@
 					'video',
 				),
 			)
-			.replace(SHORTCODES.x, (_, id) =>
-				embed(`https://platform.twitter.com/embed/Tweet.html?id=${id}`, 'x'),
-			)
+			.replace(SHORTCODES.x, (_, id) => `<div class="x-slot" data-tweet="${id}"></div>`)
 			.replace(
 				SHORTCODES.post,
 				(_, id) => `<div class="quote-slot" data-quote="${id}"></div>`,
@@ -97,7 +95,15 @@
 
 	const PURIFY_CONFIG = {
 		ADD_TAGS: ['iframe'],
-		ADD_ATTR: ['src', 'allowfullscreen', 'frameborder', 'loading', 'data-quote', 'class'],
+		ADD_ATTR: [
+			'src',
+			'allowfullscreen',
+			'frameborder',
+			'loading',
+			'data-quote',
+			'data-tweet',
+			'class',
+		],
 		ALLOW_DATA_ATTR: true,
 	};
 
@@ -126,6 +132,75 @@
 				}
 			}),
 		);
+	}
+
+	/* ---------- X (Twitter) widgets ---------- */
+
+	let twttrPromise = null;
+	function loadTwttr() {
+		if (twttrPromise) return twttrPromise;
+		twttrPromise = new Promise((resolve, reject) => {
+			if (window.twttr && window.twttr.widgets) return resolve(window.twttr);
+			const s = document.createElement('script');
+			s.src = 'https://platform.twitter.com/widgets.js';
+			s.async = true;
+			s.charset = 'utf-8';
+			s.onload = () => {
+				if (window.twttr && window.twttr.ready) {
+					window.twttr.ready(() => resolve(window.twttr));
+				} else {
+					reject(new Error('twttr unavailable'));
+				}
+			};
+			s.onerror = () => reject(new Error('failed to load widgets.js'));
+			document.head.appendChild(s);
+		});
+		return twttrPromise;
+	}
+
+	function isDark() {
+		return window.matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+
+	function tweetFallback(slot, id, label) {
+		const a = document.createElement('a');
+		a.className = 'x-fallback';
+		a.href = `https://x.com/i/web/status/${id}`;
+		a.target = '_blank';
+		a.rel = 'noopener';
+		a.textContent = label;
+		slot.replaceWith(a);
+	}
+
+	async function fillTweets(container) {
+		const slots = container.querySelectorAll('[data-tweet]');
+		if (slots.length === 0) return;
+		let twttr;
+		try {
+			twttr = await loadTwttr();
+		} catch {
+			slots.forEach((slot) =>
+				tweetFallback(
+					slot,
+					slot.getAttribute('data-tweet'),
+					`x.com / ${slot.getAttribute('data-tweet')}`,
+				),
+			);
+			return;
+		}
+		for (const slot of [...slots]) {
+			if (!slot.isConnected) continue;
+			const id = slot.getAttribute('data-tweet');
+			try {
+				const node = await twttr.widgets.createTweet(id, slot, {
+					theme: isDark() ? 'dark' : 'light',
+					dnt: true,
+				});
+				if (!node) tweetFallback(slot, id, `[tweet ${id} unavailable]`);
+			} catch {
+				tweetFallback(slot, id, `[tweet ${id} failed]`);
+			}
+		}
 	}
 
 	/* ---------- post element ---------- */
@@ -167,6 +242,7 @@
 		el.appendChild(content);
 
 		fillQuotes(content);
+		fillTweets(content);
 		return el;
 	}
 
