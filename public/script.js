@@ -219,13 +219,25 @@
 
 		const meta = document.createElement('div');
 		meta.className = 'post-meta';
-		const link = single
-			? `<a href="/">← back</a>`
-			: `<a href="/p/${post.id}">${timeLabel(post.created_at)}</a>`;
-		meta.innerHTML = link;
-		if (post.updated_at !== post.created_at) {
-			meta.innerHTML += ` <span>(edited ${timeLabel(post.updated_at)})</span>`;
+		if (single) {
+			meta.innerHTML = `<a href="/">&lt; back</a>`;
+			meta.innerHTML += post.updated_at !== post.created_at
+				? `<span>${timeLabel(post.created_at)} (edited ${timeLabel(post.updated_at)})</span>`
+				: `<span>${timeLabel(post.created_at)}</span>`;
+		} else {
+			if (post.updated_at !== post.created_at) {
+				meta.innerHTML = `<a href="/p/${post.id}">${timeLabel(post.created_at)} (edited ${timeLabel(post.updated_at)})</a>`;
+			} else {
+				meta.innerHTML = `<a href="/p/${post.id}">${timeLabel(post.created_at)}</a>`;
+			}
 		}
+		// const link = single
+		// 	? `<a href="/">← back</a>`
+		// 	: `<a href="/p/${post.id}">${timeLabel(post.created_at)}</a>`;
+		// meta.innerHTML = link;
+		// if (post.updated_at !== post.created_at) {
+		// 	meta.innerHTML += ` <span>(edited ${timeLabel(post.updated_at)})</span>`;
+		// }
 		el.appendChild(meta);
 
 		const { html, sensitive } = renderMarkdown(post.content);
