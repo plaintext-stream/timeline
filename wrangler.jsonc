@@ -12,9 +12,6 @@
 	},
 	"r2_buckets": [{ "binding": "TIMELINE_OS" }],
 	"d1_databases": [{ "binding": "TIMELINE_DB" }],
-	"secrets": {
-		"required": ["TIMELINE_ROOT_TOKEN"],
-	},
 	"observability": {
 		"enabled": true,
 	},
