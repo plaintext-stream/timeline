@@ -8,7 +8,7 @@
 	--code-bg: rgb(245, 245, 245);
 	--code-block-bg: rgb(28, 29, 33);
 	--code-block-fg: rgb(230, 232, 235);
-	--radius: 8px;
+	--radius: 5px;
 	--max: 720px;
 	--font: 'Noto Sans Mono', 'Noto Sans SC', ui-monospace, monospace;
 	color-scheme: light;
@@ -43,7 +43,7 @@ body {
 	background: var(--bg);
 	color: var(--text);
 	font-family: var(--font);
-	font-size: 15px;
+	font-size: 16px;
 	line-height: 1.65;
 	-webkit-font-smoothing: antialiased;
 }
@@ -98,7 +98,7 @@ a:hover {
 	margin: 0 auto;
 	padding: 24px 16px 40px;
 	color: var(--muted);
-	font-size: 12px;
+	font-size: 14px;
 	text-align: center;
 }
 
@@ -117,7 +117,7 @@ a:hover {
 }
 .post-meta {
 	color: var(--muted);
-	font-size: 12px;
+	font-size: 14px;
 	margin-bottom: 10px;
 	display: flex;
 }
@@ -142,7 +142,7 @@ a:hover {
 }
 .content img {
 	max-width: 100%;
-	border-radius: 8px;
+	border-radius: 5px;
 	height: auto;
 }
 .content code {
@@ -155,7 +155,7 @@ a:hover {
 	background: var(--code-block-bg);
 	color: var(--code-block-fg);
 	padding: 12px 14px;
-	border-radius: 8px;
+	border-radius: 5px;
 	overflow-x: auto;
 }
 .content pre code {
@@ -182,12 +182,13 @@ a:hover {
 }
 .content iframe {
 	border: none;
-	border-radius: 8px;
+	border-radius: 5px;
 	display: block;
 }
 .content iframe.embed-video {
-	width: 100%;
+	width: 90%;
 	aspect-ratio: 16 / 9;
+	margin: 16px auto;
 }
 .x-slot {
 	display: flex;
@@ -197,7 +198,7 @@ a:hover {
 .x-slot iframe {
 	max-width: 100% !important;
 	width: 550px !important;
-	border-radius: 8px;
+	border-radius: 5px;
 	overflow: hidden;
 }
 .x-fallback {
@@ -222,7 +223,7 @@ a:hover {
 /* Quote card */
 .quote {
 	border: 1px solid var(--border);
-	border-radius: 8px;
+	border-radius: 5px;
 	padding: 12px 14px;
 	margin: 0.8em 0;
 	display: block;
@@ -266,7 +267,7 @@ a:hover {
 }
 .field label {
 	display: block;
-	font-size: 12px;
+	font-size: 14px;
 	color: var(--muted);
 	margin-bottom: 4px;
 }
@@ -280,7 +281,7 @@ a:hover {
 	background: var(--bg);
 	color: var(--text);
 	border: 1px solid var(--border);
-	border-radius: 8px;
+	border-radius: 5px;
 }
 .field textarea {
 	min-height: 320px;
@@ -307,6 +308,8 @@ button.primary {
 	background: var(--text);
 	color: var(--bg);
 	border-color: var(--text);
+	margin-left: auto;
+	margin-top: 16px;
 }
 button:hover {
 	color: var(--muted);
@@ -331,10 +334,6 @@ button.primary:hover {
 .mode-tabs button.active:hover {
 	color: var(--bg);
 }
-.hint {
-	font-size: 12px;
-	color: var(--muted);
-}
 .toast {
 	position: fixed;
 	bottom: 24px;
@@ -343,7 +342,7 @@ button.primary:hover {
 	background: var(--text);
 	color: var(--bg);
 	padding: 8px 16px;
-	border-radius: 8px;
+	border-radius: 5px;
 	font-size: 13px;
 	opacity: 0;
 	transition: opacity 0.2s;
@@ -351,4 +350,15 @@ button.primary:hover {
 }
 .toast.show {
 	opacity: 1;
+}
+.edit-id-bar {
+	display: flex;
+	gap: 8px;
+}
+.edit-id-bar input {
+	min-width: 0;
+	flex: 1;
+}
+.edit-id-bar {
+	flex-shrink: 0;
 }

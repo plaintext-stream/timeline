@@ -261,7 +261,7 @@
 	/* ---------- home ---------- */
 
 	async function renderHome() {
-		app.innerHTML = '<div class="loading" id="sentinel">Loading…</div>';
+		app.innerHTML = '<div class="loading" id="sentinel">加载中……</div>';
 		const list = document.createElement('div');
 		app.innerHTML = '';
 		app.appendChild(list);
@@ -276,7 +276,7 @@
 		async function load() {
 			if (done || loading) return;
 			loading = true;
-			sentinel.textContent = 'Loading…';
+			sentinel.textContent = '加载中……';
 			try {
 				const page = await api(`/posts?limit=20${cursor ? `&cursor=${cursor}` : ''}`);
 				for (const p of page.posts) list.appendChild(buildPost(p));
@@ -303,7 +303,7 @@
 	/* ---------- single post ---------- */
 
 	async function renderPost(id) {
-		app.innerHTML = '<div class="loading">Loading…</div>';
+		app.innerHTML = '<div class="loading">加载中……</div>';
 		try {
 			const post = await api(`/posts/${id}`);
 			app.innerHTML = '';
@@ -333,32 +333,33 @@
 		form.className = 'manage-form';
 		form.innerHTML = `
 			<div class="field">
-				<label>Root token</label>
+				<label>密钥</label>
 				<input type="password" id="tok" autocomplete="off" />
 			</div>
 			<div class="mode-tabs">
-				<button data-mode="add" class="active">Add</button>
-				<button data-mode="edit">Edit</button>
-				<button data-mode="delete">Delete</button>
+				<button data-mode="add" class="active">发布</button>
+				<button data-mode="edit">编辑</button>
+				<button data-mode="delete">删除</button>
 			</div>
 			<div class="field" id="id-field" hidden>
-				<label>Post ID (16 hex)</label>
-				<input type="text" id="pid" autocomplete="off" />
+				<label>帖子 ID</label>
+				<div class="edit-id-bar">
+					<input type="text" id="pid" autocomplete="off" />
+					<button id="load-btn" hidden>加载</button>
+				</div>
 			</div>
 			<div id="editor">
 				<div class="field">
-					<label>Content (Markdown)</label>
+					<label>内容</label>
 					<textarea id="content"></textarea>
 				</div>
 				<div class="row">
 					<input type="file" id="img" accept="image/*" multiple hidden />
-					<button id="pick">Attach image</button>
-					<span class="hint">images are converted to WebP</span>
+					<button id="pick">上传图片</button>
 				</div>
 			</div>
 			<div class="row" style="margin-top:16px">
-				<button class="primary" id="submit">Add post</button>
-				<button id="load-btn" hidden>Load</button>
+				<button class="primary" id="submit">发布</button>
 			</div>
 		`;
 		app.appendChild(form);
@@ -381,13 +382,13 @@
 			const needId = m !== 'add';
 			idField.hidden = !needId;
 			editor.hidden = m === 'delete';
-			loadBtn.hidden = m === 'add';
+			loadBtn.hidden = m !== 'edit';
 			if (m === 'add') {
-				submit.textContent = 'Add post';
+				submit.textContent = '发布';
 			} else if (m === 'edit') {
-				submit.textContent = 'Save changes';
+				submit.textContent = '保存';
 			} else {
-				submit.textContent = 'Delete post';
+				submit.textContent = '删除';
 			}
 		}
 		form.querySelectorAll('.mode-tabs button').forEach((b) =>
@@ -422,21 +423,21 @@
 		});
 
 		loadBtn.addEventListener('click', async () => {
-			if (!pid.value) return toast('Enter post ID');
+			if (!pid.value) return toast('请输入帖子 ID');
 			try {
 				const post = await api(`/posts/${pid.value}`);
 				content.value = post.content;
-				toast('Loaded');
+				toast('加载成功');
 			} catch (e) {
 				toast(e.message);
 			}
 		});
 
 		submit.addEventListener('click', async () => {
-			if (!token) return toast('Token required');
+			if (!token) return toast('需要密钥');
 			try {
 				if (mode === 'add') {
-					if (!content.value.trim()) return toast('Content empty');
+					if (!content.value.trim()) return toast('内容不能为空');
 					const post = await api('/posts', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
@@ -446,8 +447,8 @@
 					history.pushState(null, '', `/p/${post.id}`);
 					route();
 				} else if (mode === 'edit') {
-					if (!pid.value) return toast('Post ID required');
-					if (!content.value.trim()) return toast('Content empty');
+					if (!pid.value) return toast('需要帖子 ID');
+					if (!content.value.trim()) return toast('内容不能为空');
 					const post = await api(`/posts/${pid.value}`, {
 						method: 'PUT',
 						headers: { 'Content-Type': 'application/json' },
@@ -457,8 +458,8 @@
 					history.pushState(null, '', `/p/${post.id}`);
 					route();
 				} else {
-					if (!pid.value) return toast('Post ID required');
-					if (!confirm('Delete this post?')) return;
+					if (!pid.value) return toast('需要帖子 ID');
+					if (!confirm('确认删除？')) return;
 					await api(`/posts/${pid.value}`, { method: 'DELETE' });
 					toast('Deleted');
 					history.pushState(null, '', '/');
