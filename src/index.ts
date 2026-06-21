@@ -9,6 +9,7 @@ import {
 	handleDelete,
 } from './routes/posts';
 import { handleUpload, handleServe } from './routes/images';
+import { handleSitemap, handleRSS } from './routes/feeds';
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
@@ -44,6 +45,14 @@ export default {
 		const imgMatch = /^\/i\/(.+)$/.exec(path);
 		if (imgMatch && method === 'GET') {
 			return handleServe(imgMatch[1], env, request);
+		}
+
+		if (path === '/sitemap.xml' && method === 'GET') {
+			return handleSitemap(request, env);
+		}
+
+		if (path === '/rss.xml' && method === 'GET') {
+			return handleRSS(request, env);
 		}
 
 		if (path.startsWith('/api/')) {
