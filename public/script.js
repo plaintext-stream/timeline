@@ -461,7 +461,7 @@
 					if (!pid.value) return toast('需要帖子 ID');
 					if (!confirm('确认删除？')) return;
 					await api(`/posts/${pid.value}`, { method: 'DELETE' });
-					toast('Deleted');
+					toast('已删除');
 					history.pushState(null, '', '/');
 					route();
 				}
